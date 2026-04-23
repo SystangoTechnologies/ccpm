@@ -9,11 +9,11 @@ echo ""
 
 found=0
 
-for epic_dir in .claude/epics/*/; do
+for epic_dir in epics/*/; do
   [ -d "$epic_dir" ] || continue
   epic_name=$(basename "$epic_dir")
 
-  for task_file in "$epic_dir"/[0-9]*.md; do
+  for task_file in "$epic_dir"/T*.md; do
     [ -f "$task_file" ] || continue
 
     # Check if task is open
@@ -33,19 +33,27 @@ for epic_dir in .claude/epics/*/; do
 
     if [ -n "$deps" ] && [ "$deps" != "depends_on:" ]; then
       task_name=$(grep "^name:" "$task_file" | head -1 | sed 's/^name: *//')
-      task_num=$(basename "$task_file" .md)
+      task_id=$(grep "^task_id:" "$task_file" | head -1 | sed 's/^task_id: *//')
+      jira_key=$(grep "^jira_key:" "$task_file" | head -1 | sed 's/^jira_key: *//')
+      [ -z "$task_id" ] && task_id=$(basename "$task_file" .md)
 
-      echo "⏸️ Task #$task_num - $task_name"
+      echo "⏸️ Task $task_id - $task_name"
       echo "   Epic: $epic_name"
+      [ -n "$jira_key" ] && echo "   Jira: $jira_key"
       echo "   Blocked by: [$deps]"
 
       # Check status of dependencies
       open_deps=""
       for dep in $deps; do
-        dep_file="$epic_dir$dep.md"
+        dep=$(echo "$dep" | sed 's/"//g' | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//')
+        dep_file="$epic_dir/$dep.md"
         if [ -f "$dep_file" ]; then
           dep_status=$(grep "^status:" "$dep_file" | head -1 | sed 's/^status: *//')
-          [ "$dep_status" = "open" ] && open_deps="$open_deps #$dep"
+          if [ "$dep_status" = "open" ] || [ "$dep_status" = "in-progress" ]; then
+            open_deps="$open_deps $dep"
+          fi
+        else
+          open_deps="$open_deps $dep(missing)"
         fi
       done
 

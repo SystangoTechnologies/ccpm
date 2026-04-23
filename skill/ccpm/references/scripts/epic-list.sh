@@ -3,8 +3,8 @@ echo "Getting epics..."
 echo ""
 echo ""
 
-[ ! -d ".claude/epics" ] && echo "📁 No epics directory found. Create your first epic with: /pm:prd-parse <feature-name>" && exit 0
-[ -z "$(ls -d .claude/epics/*/ 2>/dev/null)" ] && echo "📁 No epics found. Create your first epic with: /pm:prd-parse <feature-name>" && exit 0
+[ ! -d "epics" ] && echo "📁 No epics directory found. Create your first epic with: /pm:prd-parse <feature-name>" && exit 0
+[ -z "$(ls -d epics/*/ 2>/dev/null)" ] && echo "📁 No epics found. Create your first epic with: /pm:prd-parse <feature-name>" && exit 0
 
 echo "📚 Project Epics"
 echo "================"
@@ -16,7 +16,7 @@ in_progress_epics=""
 completed_epics=""
 
 # Process all epics
-for dir in .claude/epics/*/; do
+for dir in epics/*/; do
   [ -d "$dir" ] || continue
   [ -f "$dir/epic.md" ] || continue
 
@@ -24,19 +24,18 @@ for dir in .claude/epics/*/; do
   n=$(grep "^name:" "$dir/epic.md" | head -1 | sed 's/^name: *//')
   s=$(grep "^status:" "$dir/epic.md" | head -1 | sed 's/^status: *//' | tr '[:upper:]' '[:lower:]')
   p=$(grep "^progress:" "$dir/epic.md" | head -1 | sed 's/^progress: *//')
-  g=$(grep "^github:" "$dir/epic.md" | head -1 | sed 's/^github: *//')
+  jira_key=$(grep "^jira_key:" "$dir/epic.md" | head -1 | sed 's/^jira_key: *//')
 
   # Defaults
   [ -z "$n" ] && n=$(basename "$dir")
   [ -z "$p" ] && p="0%"
 
   # Count tasks
-  t=$(ls "$dir"/[0-9]*.md 2>/dev/null | wc -l)
+  t=$(ls "$dir"/T*.md 2>/dev/null | wc -l)
 
-  # Format output with GitHub issue number if available
-  if [ -n "$g" ]; then
-    i=$(echo "$g" | grep -o '/[0-9]*$' | tr -d '/')
-    entry="   📋 ${dir}epic.md (#$i) - $p complete ($t tasks)"
+  # Format output with Jira key if available
+  if [ -n "$jira_key" ]; then
+    entry="   📋 ${dir}epic.md ($jira_key) - $p complete ($t tasks)"
   else
     entry="   📋 ${dir}epic.md - $p complete ($t tasks)"
   fi
@@ -86,8 +85,8 @@ fi
 # Summary
 echo ""
 echo "📊 Summary"
-total=$(ls -d .claude/epics/*/ 2>/dev/null | wc -l)
-tasks=$(find .claude/epics -name "[0-9]*.md" 2>/dev/null | wc -l)
+total=$(ls -d epics/*/ 2>/dev/null | wc -l)
+tasks=$(find epics -name "T*.md" 2>/dev/null | wc -l)
 echo "   Total epics: $total"
 echo "   Total tasks: $tasks"
 

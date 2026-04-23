@@ -8,7 +8,7 @@ Tracking operations use bash scripts directly for speed and consistency. The LLM
 
 All tracking operations have a corresponding bash script. Run the script; do not reconstruct the output manually.
 
-Scripts live in `references/scripts/` relative to this skill, but need to run from the **project root** (where `.claude/` lives). Run them as:
+Scripts live in `references/scripts/` relative to this skill, but need to run from the **project root** (where `prds/` and `epics/` live). Run them as:
 
 ```bash
 bash <skill_path>/references/scripts/<script>.sh [args]
@@ -73,7 +73,7 @@ bash references/scripts/epic-show.sh <name>
 bash references/scripts/epic-status.sh <name>
 ```
 
-Shows: task completion breakdown, active agents, blocking issues.
+Shows: task completion breakdown, blocking issues.
 
 ---
 
@@ -149,7 +149,7 @@ bash references/scripts/blocked.sh
 bash references/scripts/validate.sh
 ```
 
-Checks: frontmatter consistency, orphaned files, missing GitHub links, dependency integrity.
+Checks: frontmatter consistency, orphaned files, missing Jira links, dependency integrity. For DOR/DOD against Jira templates, see `conventions.md` (template section titles/order only; `ticket_type` on `T###.md`).
 
 ---
 
@@ -157,7 +157,15 @@ Checks: frontmatter consistency, orphaned files, missing GitHub links, dependenc
 
 If a script fails or the output needs interpretation (e.g., an error in the output, or the user asks "what does this mean"), then step in to explain. But always run the script first — don't guess at what status/standup output would look like.
 
-If `.claude/` directory doesn't exist at all, the project hasn't been initialized. Direct the user to run:
+## Jira-Aware Task Identity
+
+Tracking is local-file-first and Jira-aware:
+
+- Local task identity is `task_id` (for example, `T001`), not remote numeric filenames.
+- Jira identity is `jira_key` (for example, `PROJ-123`) and is used for remote lookups.
+- Scripts should discover task files with metadata (`task_id`, `status`) and must not rely on `[0-9]*.md` naming.
+
+If `prds/` and `epics/` directories do not exist, the project hasn't been initialized. Direct the user to run:
 ```bash
 bash references/scripts/init.sh
 ```
