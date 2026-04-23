@@ -11,20 +11,20 @@ if [ -z "$epic_name" ]; then
   echo "Usage: /pm:epic-status <epic-name>"
   echo ""
   echo "Available epics:"
-  for dir in .claude/epics/*/; do
+  for dir in epics/*/; do
     [ -d "$dir" ] && echo "  • $(basename "$dir")"
   done
   exit 1
 else
   # Show status for specific epic
-  epic_dir=".claude/epics/$epic_name"
+  epic_dir="epics/$epic_name"
   epic_file="$epic_dir/epic.md"
 
   if [ ! -f "$epic_file" ]; then
     echo "❌ Epic not found: $epic_name"
     echo ""
     echo "Available epics:"
-    for dir in .claude/epics/*/; do
+    for dir in epics/*/; do
       [ -d "$dir" ] && echo "  • $(basename "$dir")"
     done
     exit 1
@@ -37,7 +37,7 @@ else
   # Extract metadata
   status=$(grep "^status:" "$epic_file" | head -1 | sed 's/^status: *//')
   progress=$(grep "^progress:" "$epic_file" | head -1 | sed 's/^progress: *//')
-  github=$(grep "^github:" "$epic_file" | head -1 | sed 's/^github: *//')
+  jira_key=$(grep "^jira_key:" "$epic_file" | head -1 | sed 's/^jira_key: *//')
 
   # Count tasks
   total=0
@@ -46,12 +46,12 @@ else
   blocked=0
 
   # Use find to safely iterate over task files
-  for task_file in "$epic_dir"/[0-9]*.md; do
+  for task_file in "$epic_dir"/T*.md; do
     [ -f "$task_file" ] || continue
     ((total++))
 
     task_status=$(grep "^status:" "$task_file" | head -1 | sed 's/^status: *//')
-    deps=$(grep "^depends_on:" "$task_file" | head -1 | sed 's/^depends_on: *\[//' | sed 's/\]//')
+    deps=$(grep "^depends_on:" "$task_file" | head -1 | sed 's/^depends_on: *\[//' | sed 's/\]//' | sed 's/"//g')
 
     if [ "$task_status" = "closed" ] || [ "$task_status" = "completed" ]; then
       ((closed++))
@@ -83,8 +83,8 @@ else
   echo "  🔄 Available: $open"
   echo "  ⏸️ Blocked: $blocked"
 
-  [ -n "$github" ] && echo ""
-  [ -n "$github" ] && echo "🔗 GitHub: $github"
+  [ -n "$jira_key" ] && echo ""
+  [ -n "$jira_key" ] && echo "🔗 Jira: $jira_key"
 fi
 
 exit 0

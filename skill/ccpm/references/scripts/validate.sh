@@ -13,17 +13,16 @@ warnings=0
 
 # Check directory structure
 echo "📁 Directory Structure:"
-[ -d ".claude" ] && echo "  ✅ .claude directory exists" || { echo "  ❌ .claude directory missing"; ((errors++)); }
-[ -d ".claude/prds" ] && echo "  ✅ PRDs directory exists" || echo "  ⚠️ PRDs directory missing"
-[ -d ".claude/epics" ] && echo "  ✅ Epics directory exists" || echo "  ⚠️ Epics directory missing"
-[ -d ".claude/rules" ] && echo "  ✅ Rules directory exists" || echo "  ⚠️ Rules directory missing"
+[ -d "prds" ] && echo "  ✅ PRDs directory exists" || echo "  ⚠️ PRDs directory missing"
+[ -d "epics" ] && echo "  ✅ Epics directory exists" || echo "  ⚠️ Epics directory missing"
+[ -d "context" ] && echo "  ✅ Context directory exists" || echo "  ⚠️ Context directory missing"
 echo ""
 
 # Check for orphaned files
 echo "🗂️ Data Integrity:"
 
 # Check epics have epic.md files
-for epic_dir in .claude/epics/*/; do
+for epic_dir in epics/*/; do
   [ -d "$epic_dir" ] || continue
   if [ ! -f "$epic_dir/epic.md" ]; then
     echo "  ⚠️ Missing epic.md in $(basename "$epic_dir")"
@@ -32,14 +31,14 @@ for epic_dir in .claude/epics/*/; do
 done
 
 # Check for tasks without epics
-orphaned=$(find .claude -name "[0-9]*.md" -not -path ".claude/epics/*/*" 2>/dev/null | wc -l)
+orphaned=$(find . -name "T*.md" -not -path "./epics/*/*" 2>/dev/null | wc -l)
 [ $orphaned -gt 0 ] && echo "  ⚠️ Found $orphaned orphaned task files" && ((warnings++))
 
 # Check for broken references
 echo ""
 echo "🔗 Reference Check:"
 
-for task_file in .claude/epics/*/[0-9]*.md; do
+for task_file in epics/*/T*.md; do
   [ -f "$task_file" ] || continue
 
   deps_line=$(grep "^depends_on:" "$task_file" | head -1)
@@ -52,6 +51,7 @@ for task_file in .claude/epics/*/[0-9]*.md; do
   if [ -n "$deps" ] && [ "$deps" != "depends_on:" ]; then
     epic_dir=$(dirname "$task_file")
     for dep in $deps; do
+      dep=$(echo "$dep" | sed 's/"//g' | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//')
       if [ ! -f "$epic_dir/$dep.md" ]; then
         echo "  ⚠️ Task $(basename "$task_file" .md) references missing task: $dep"
         ((warnings++))
@@ -60,7 +60,17 @@ for task_file in .claude/epics/*/[0-9]*.md; do
   fi
 done
 
-if [ $warnings -eq 0 ] && [ $errors -eq 0 ]; then
+missing_jira=0
+for task_file in epics/*/T*.md; do
+  [ -f "$task_file" ] || continue
+  if ! grep -q "^jira_key:" "$task_file"; then
+    echo "  ⚠️ Missing jira_key in $(basename "$task_file")"
+    ((warnings++))
+    ((missing_jira++))
+  fi
+done
+
+if [ $warnings -eq 0 ] && [ $errors -eq 0 ] && [ $missing_jira -eq 0 ]; then
   echo "  ✅ All references valid"
 fi
 
@@ -69,7 +79,7 @@ echo ""
 echo "📝 Frontmatter Validation:"
 invalid=0
 
-for file in $(find .claude -name "*.md" -path "*/epics/*" -o -path "*/prds/*" 2>/dev/null); do
+for file in $(find epics prds -name "*.md" 2>/dev/null); do
   if ! grep -q "^---" "$file"; then
     echo "  ⚠️ Missing frontmatter: $(basename "$file")"
     ((invalid++))

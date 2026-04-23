@@ -4,7 +4,7 @@
 &nbsp;
 [![Eval Score](https://img.shields.io/badge/eval_score-100%25-brightgreen)](#proven-results)
 &nbsp;
-[![GitHub Issues](https://img.shields.io/badge/+-GitHub%20Issues-1f2328)](https://github.com/automazeio/ccpm)
+[![Jira](https://img.shields.io/badge/tracker-Jira-0052CC)](https://www.atlassian.com/software/jira)
 &nbsp;
 [![MIT License](https://img.shields.io/badge/License-MIT-28a745)](LICENSE)
 &nbsp;
@@ -12,9 +12,9 @@
 &nbsp;
 [![Star this repo](https://img.shields.io/github/stars/automazeio/ccpm.svg?style=social&label=Star%20this%20repo&maxAge=60)](https://github.com/automazeio/ccpm)
 
-### Spec-driven development for AI agents – ship ~~faster~~ _better_ using PRDs, GitHub issues, and multiple agents running in parallel.
+### Spec-driven **project management** — PRDs, epics, Jira-aligned work items, and reporting (no dev execution in this repo).
 
-Stop losing context. Stop blocking on tasks. Stop shipping bugs. CCPM gives your AI agent a structured PM brain: turn ideas into PRDs, PRDs into epics, epics into GitHub issues, and issues into production code — with full traceability at every step.
+CCPM is a **PM-focused** skill: turn ideas into PRDs, PRDs into epics, epics into structured work items, sync to **Jira**, and track status — with local markdown as the spec source of truth. Engineering delivery happens in your codebase and Jira workflow; this skill stays on planning, decomposition, templates, and visibility.
 
 ---
 
@@ -30,14 +30,15 @@ Stop losing context. Stop blocking on tasks. Stop shipping bugs. CCPM gives your
 - [Background](#background)
 - [The Workflow](#the-workflow)
 - [What Makes This Different](#what-makes-this-different)
-- [Why GitHub Issues](#why-github-issues)
+- [Why Jira](#why-jira)
 - [Core Principle: No Vibe Coding](#core-principle-no-vibe-coding)
-- [The Parallel Execution System](#the-parallel-execution-system)
+- [Planning and sequencing](#planning-and-sequencing)
 - [Key Features & Benefits](#key-features--benefits)
 - [Install](#install)
 - [Usage](#usage)
 - [Workflow Phases](#workflow-phases)
 - [Skill Structure](#skill-structure)
+- [Documentation (`docs/`)](docs/README.md)
 - [Example Flow](#example-flow)
 - [Proven Results](#proven-results)
 - [Local vs Remote](#local-vs-remote)
@@ -55,7 +56,7 @@ Stop losing context. Stop blocking on tasks. Stop shipping bugs. CCPM gives your
 
 Every team struggles with the same problems:
 - **Context evaporates** between sessions, forcing constant re-discovery
-- **Parallel work creates conflicts** when multiple agents touch the same code
+- **Parallel work needs clear ownership** when many streams depend on the same decisions
 - **Requirements drift** as verbal decisions override written specs
 - **Progress becomes invisible** until the very end
 
@@ -68,9 +69,9 @@ CCPM solves all of that.
 ```mermaid
 graph LR
     A[PRD Creation] --> B[Epic Planning]
-    B --> C[Task Decomposition]
-    C --> D[GitHub Sync]
-    D --> E[Parallel Execution]
+    B --> C[Work item decomposition]
+    C --> D[Jira Sync]
+    D --> E[Track and report]
 ```
 
 ### See It In Action
@@ -82,11 +83,8 @@ graph LR
 "break down the notification-system epic"
 → Parallelizable task files with dependencies
 
-"sync the notification-system epic to GitHub"
-→ Epic issue + sub-issues + worktree
-
-"start working on issue 42"
-→ Parallel stream analysis + multiple agents launched
+"sync the notification-system epic to Jira"
+→ Epic issue + linked child issues + tracker mapping
 
 "what's our standup for today?"
 → Instant report from project files
@@ -99,69 +97,43 @@ graph LR
 | Traditional AI Development | CCPM |
 |---|---|
 | Context lost between sessions | **Persistent context** across all work |
-| One agent, one task | **Parallel agents** on independent streams |
+| One flat backlog | **Structured epics** and dependency-aware work items |
 | Vibe coding from memory | **Spec-driven** with full traceability |
-| Progress hidden in chat logs | **Transparent audit trail** in GitHub |
+| Progress hidden in chat logs | **Transparent audit trail** in Jira |
 | Scattered status updates | **Structured standup, blocked, next** |
 
 ---
 
-## Why GitHub Issues
+## Why Jira
 
-Most AI coding workflows operate in isolation — a single session with no shared state. CCPM uses GitHub Issues as the source of truth, which unlocks something fundamentally different:
+CCPM uses **Jira** as the tracker of record (via Atlassian MCP) so PM work connects to how your team already plans and delivers.
 
-**Team collaboration** — multiple agents (or humans) work on the same project simultaneously. Progress is visible in real-time through issue comments.
+**Team visibility** — epics, stories, tasks, and bugs stay aligned with your Jira templates; status and links live where stakeholders look.
 
-**Seamless handoffs** — an agent can start a task, a human can finish it, or vice versa. No "what did the AI do?" meetings.
+**Single source of truth for specs** — local markdown (`prds/`, `epics/`) holds PRDs and decomposition; Jira holds workflow, assignments, and delivery state your org owns.
 
-**Single source of truth** — no separate databases or project management tools. Issue state is project state. Comments are the audit trail.
-
-**Works with what you have** — no dependency on GitHub Projects. Integrates with existing labels, milestones, and PR workflows.
+**Works with what you have** — issue types, required fields, parent links, and project metadata from your Jira configuration.
 
 ---
 
-## Core Principle: No Vibe Coding
+## Core principle: specs before scale
 
-> **Every line of code must trace back to a specification.**
+> **Every committed scope should trace back to a written spec.**
 
-CCPM enforces a strict 5-phase discipline:
+CCPM follows a **four-phase** PM discipline:
 
-1. **🧠 Brainstorm** — think deeper than comfortable
-2. **📝 Document** — write specs that leave nothing to interpretation
-3. **📐 Plan** — architect with explicit technical decisions
-4. **⚡ Execute** — build exactly what was specified
-5. **📊 Track** — maintain transparent progress at every step
+1. **Plan** — PRD and epic aligned to your Jira epic template  
+2. **Structure** — `T###.md` work items (Story / Task / Sub-task / Bug) with dependencies  
+3. **Sync** — create and link Jira issues from local files  
+4. **Track** — status, standup, next, blocked — via scripts  
 
-No shortcuts. No assumptions. No regrets.
+Delivery and coding happen outside this skill; CCPM keeps the **planning and tracker layer** consistent.
 
 ---
 
-## The Parallel Execution System
+## Planning and sequencing
 
-### Issues Aren't Atomic
-
-Traditional thinking: **one issue = one agent = one task**
-
-Reality: a single "Implement user authentication" issue is actually:
-
-- **Agent 1**: Database tables and migrations
-- **Agent 2**: Service layer and business logic
-- **Agent 3**: API endpoints and middleware
-- **Agent 4**: UI components and forms
-- **Agent 5**: Test suites and documentation
-
-All running **simultaneously** in the same worktree.
-
-### The Math of Velocity
-
-| Approach | Agents working | Wall time |
-|---|---|---|
-| Traditional (serial) | 1 | 5x |
-| CCPM (parallel streams) | 5 | 1x |
-
-### Context Stays Clean
-
-Each agent handles its own context in isolation. Your main conversation becomes the conductor — it never drowns in implementation details. Agents read from `.claude/epics/` and commit progress back through Git.
+Work items carry `depends_on`, `parallel`, and `conflicts_with` for **planning** (sprint ordering, capacity, risk), not for running automated coding agents. Use them to express what could run in parallel versus what must stay sequential — without implying dev execution from this repository.
 
 ---
 
@@ -169,11 +141,9 @@ Each agent handles its own context in isolation. Your main conversation becomes 
 
 **🧠 Context preservation** — project state lives in files, not in your head or chat history. Start a session anywhere, any time.
 
-**⚡ Parallel execution** — tasks marked `parallel: true` run concurrently across multiple agents without conflicts.
+**🔗 Jira-backed** — sync to the tracker your team already uses via Atlassian MCP.
 
-**🔗 GitHub native** — works with tools your team already uses. No dependency on the Projects API.
-
-**📊 Full traceability** — every decision documented. PRD → Epic → Task → Issue → Code → Commit.
+**📊 Traceability for PM** — PRD → Epic → work items → Jira keys and mapping files.
 
 **🤖 Deterministic ops run as scripts** — status, standup, search, validate all run as bash scripts: fast, consistent, no LLM token cost.
 
@@ -200,10 +170,11 @@ ln -s /path/to/ccpm/skill/ccpm ~/.factory/skills/ccpm
 
 ### Claude Code
 
-In your project root, add a `skills/` directory and symlink or copy the skill:
+In your **project root**, add a `skills/` directory and symlink or copy the skill (same layout as other Agent Skills–compatible harnesses):
 
 ```bash
-ln -s /path/to/ccpm/skill/ccpm .claude/skills/ccpm
+mkdir -p skills
+ln -s /path/to/ccpm/skill/ccpm skills/ccpm
 ```
 
 ### Any other Agent Skills–compatible harness
@@ -212,8 +183,8 @@ Point it at `skill/ccpm/`. It follows the [agentskills.io](https://agentskills.i
 
 ### Prerequisites
 
-- `git` and `gh` CLI (authenticated: `gh auth login`)
-- A GitHub repository for your project
+- `git` and a remote for your project (any host your team uses)
+- **Jira**: a project you can create issues in, and **Atlassian MCP** connected in Cursor (or your harness) for `createJiraIssue`, JQL search, transitions, and comments
 
 ---
 
@@ -228,12 +199,12 @@ CCPM activates automatically when your agent detects PM intent. Just talk natura
 | "I want to build X" / "let's plan X" | Brainstorming + PRD creation |
 | "parse the X PRD" / "create an epic for X" | PRD → technical epic |
 | "break down the X epic" | Epic decomposition into tasks |
-| "sync the X epic to GitHub" | Issues created, worktree set up |
-| "start working on issue N" | Analysis + parallel agents launched |
+| "sync the X epic to Jira" | Jira issues created, `tracker-mapping.md` updated |
+| "what's in progress" / "standup" | Scripts read local + task status |
 | "standup" / "what's our status" | Bash script runs instantly |
 | "what's next" / "what's blocked" | Priority queue from project files |
-| "close issue N" | Local + GitHub updated |
-| "merge the X epic" | Tests, merge, cleanup |
+| "close task T001" / "close issue PROJ-123" | Local + Jira updated |
+| "complete the X epic" | Jira epic done + local epic status (no git in sync phase) |
 
 ---
 
@@ -245,9 +216,9 @@ CCPM activates automatically when your agent detects PM intent. Just talk natura
 "I want to build a notification system — push, email, and in-app"
 ```
 
-CCPM conducts guided brainstorming before writing anything. It asks about the problem, users, success criteria, constraints, and what's out of scope — then creates a structured PRD at `.claude/prds/<name>.md`.
+CCPM conducts guided brainstorming before writing anything. It asks about the problem, users, success criteria, constraints, and what's out of scope — then creates a structured PRD at `prds/<name>.md`.
 
-When ready: "parse the notification-system PRD" → produces a technical epic at `.claude/epics/notification-system/epic.md` with architecture decisions, technical approach, and task preview.
+When ready: "parse the notification-system PRD" → produces an epic at `epics/notification-system/epic.md` using your Jira epic template sections.
 
 ### 2. Structure — Break it down
 
@@ -255,31 +226,23 @@ When ready: "parse the notification-system PRD" → produces a technical epic at
 "break down the notification-system epic into tasks"
 ```
 
-Each task gets a file with acceptance criteria, effort estimate, `depends_on`, `parallel`, and `conflicts_with` metadata. Tasks are intelligently batched for parallel creation. ≤10 tasks per epic by default.
+Each work item gets a `T###.md` file using your Jira Story/Task/Bug templates, plus `depends_on`, `parallel`, and `conflicts_with` for planning. ≤10 work items per epic by default.
 
-### 3. Sync — Push to GitHub
-
-```
-"sync the notification-system epic to GitHub"
-```
-
-Creates an epic issue, creates sub-issues for each task, renames local files to match GitHub issue numbers, sets up a dedicated worktree (`../epic-notification-system/`), and creates a mapping file for reference.
-
-### 4. Execute — Start building
+### 3. Sync — Push to Jira
 
 ```
-"start working on issue 42"
+"sync the notification-system epic to Jira"
 ```
 
-Analyzes the issue for independent work streams, launches parallel agents scoped to their own files, and sets up progress tracking. Each agent commits with `Issue #N: description` and coordinates through Git.
+Creates an epic issue, creates child issues for each task, keeps stable local task IDs (`T001.md`), and writes `tracker-mapping.md` for local-to-Jira keys.
 
-### 5. Track — Know where things stand
+### 4. Track — Know where things stand
 
 ```
 "standup" / "what's blocked" / "what's next"
 ```
 
-All tracking operations run as bash scripts — instant output, no LLM overhead. The scripts scan `.claude/epics/` and report what's in progress, what's next, and what's blocked.
+All tracking operations run as bash scripts — instant output, no LLM overhead. The scripts scan `epics/` and report what's in progress, what's next, and what's blocked.
 
 ---
 
@@ -291,10 +254,9 @@ skill/ccpm/
 └── references/
     ├── plan.md               # PRD writing + parsing to epic
     ├── structure.md          # Epic decomposition into tasks
-    ├── sync.md               # GitHub sync, progress comments, close, merge
-    ├── execute.md            # Issue analysis + parallel agent launch
+    ├── sync.md               # Jira sync, close issues, complete epic, bugs
     ├── track.md              # Status, standup, search, next, blocked
-    ├── conventions.md        # File formats, frontmatter schemas, git rules
+    ├── conventions.md        # File formats, frontmatter, Jira templates
     └── scripts/              # Bash scripts for deterministic operations
         ├── status.sh
         ├── standup.sh
@@ -303,21 +265,19 @@ skill/ccpm/
         └── ...               # 14 scripts total
 ```
 
-Your project files live in `.claude/` in your project root:
+Your project files live at the **repository root** (alongside your app code):
 
 ```
-.claude/
-├── prds/                     # Product requirement documents
-├── epics/
-│   └── <feature>/
-│       ├── epic.md           # Technical epic
-│       ├── <N>.md            # Task files (named by GitHub issue number after sync)
-│       ├── <N>-analysis.md   # Parallel work stream analysis
-│       └── updates/          # Agent progress tracking
-└── (archived epics)
+prds/                         # Product requirement documents
+epics/
+└── <feature>/
+    ├── epic.md               # Epic (Jira template)
+    └── T###.md               # Work items (stable local IDs)
+docs/                         # Optional: design notes, ADRs, and other new docs
+context/                      # Optional: harness / agent context files
 ```
 
-Files are the source of truth — plain markdown that lives in your repo, no external services.
+Markdown under `prds/` and `epics/` is the spec source of truth; Jira holds workflow and delivery state when you sync.
 
 ---
 
@@ -330,39 +290,32 @@ CCPM: Asks 5 clarifying questions about scope, users, success criteria...
 
 You: [answers]
 
-CCPM: ✅ PRD created: .claude/prds/payment-integration.md
+CCPM: ✅ PRD created: prds/payment-integration.md
       Ready to create the technical epic?
 
 You: "yes, parse it"
 
-CCPM: ✅ Epic created: .claude/epics/payment-integration/epic.md
+CCPM: ✅ Epic created: epics/payment-integration/epic.md
       8 task categories identified. Ready to decompose?
 
 You: "break it down"
 
 CCPM: ✅ Created 7 tasks — 5 parallel, 2 sequential
-      Ready to push to GitHub?
+      Ready to push to Jira?
 
 You: "sync it"
 
-CCPM: ✅ Epic #1234 created
-      ✅ 7 sub-issues created (#1235–#1241)
-      ✅ Worktree: ../epic-payment-integration/
-
-You: "start working on issue 1235"
-
-CCPM: Analyzed 3 parallel streams:
-      Stream A: Stripe client setup ✓ Started
-      Stream B: Webhook handler ✓ Started
-      Stream C: Database models ⏸ Waiting on A
+CCPM: ✅ Jira epic PAY-100 created
+      ✅ 7 child issues created (PAY-101–PAY-107)
+      ✅ tracker-mapping.md updated
 
 You: "what's our standup?"
 
-CCPM: [runs standup.sh instantly]
-      📅 Daily Standup — 2026-03-18
-      🔄 In Progress: Issue #1235 (payment-integration) — 60%
-      ⏭️ Next: Issue #1236 — Subscription billing logic
-      📊 Tasks: 2 in progress, 5 open, 0 closed
+CCPM: [runs standup.sh]
+      📅 Daily Standup — recent edits to PRDs/epics/tasks
+      🔄 In progress: items with status in-progress (if any)
+      ⏭️ Next: open items with no blocking dependencies
+      📊 Tasks: N open, M closed
 ```
 
 ---
@@ -382,32 +335,37 @@ In structured evals comparing CCPM-equipped agents vs baseline (no skill):
 | Scenario | With CCPM | Without |
 |---|---|---|
 | PRD creation (brainstorm-first, correct paths) | ✅ 4/4 | ❌ 2/4 |
-| Issue execution (analysis + worktree checks) | ✅ 4/4 | ❌ 0/4 |
+| Epic decomposition + Jira sync path | ✅ 4/4 | ❌ 0/4 |
 | Standup (runs script, real data) | ✅ 3/3 | ❌ 1/3 |
 | **Overall** | **100%** | **27.7%** |
 
 ---
 
-## Local vs Remote
+## Local vs Jira
 
-| Operation | Local | GitHub |
+| Operation | Local (repo) | Jira |
 |---|---|---|
 | PRD creation | ✅ | — |
 | Implementation planning | ✅ | — |
-| Task breakdown | ✅ | ✅ (on sync) |
-| Execution | ✅ | — |
-| Progress updates | ✅ | ✅ (on sync) |
-| Final deliverables | — | ✅ |
+| Task breakdown | ✅ | ✅ (issues created on sync) |
+| Delivery / coding | — | ✅ (your team’s Jira + repo) |
+| PM status updates | ✅ (local markdown) | ✅ (comments / transitions on sync) |
+| Workflow & reporting | — | ✅ |
 
 ---
 
 ## Technical Notes
 
-**GitHub integration** — uses `gh-sub-issue` extension for proper parent-child relationships. Falls back to task lists if not installed. Install with: `gh extension install yahsan2/gh-sub-issue`
+**Jira integration** — uses Cursor Atlassian MCP tools (`getAccessibleAtlassianResources`, `getVisibleJiraProjects`, `getJiraProjectIssueTypesMetadata`, `createJiraIssue`, `createIssueLink`) to create epic/story/task hierarchies per project.
 
-**File naming** — tasks start as `001.md`, `002.md` during decomposition. After GitHub sync, renamed to `{issue-id}.md` (e.g. `1234.md`). Issue #1234 = file `1234.md`.
+**File naming** — tasks use stable IDs like `T001.md`, `T002.md` during decomposition and remain stable after sync. Jira keys are stored in frontmatter (`jira_key`) and mapping files.
 
-**Design decisions** — intentionally avoids GitHub Projects API complexity. All operations work on local files first for speed. GitHub sync is explicit and controlled. Worktrees provide clean git isolation for parallel work.
+**Migration from legacy trackers** — if your existing epics use numeric task files (`001.md` / `1234.md`) or old non-Jira frontmatter, migrate to:
+- `T###.md` files with `task_id: T###`
+- `jira_key` / `jira_url` fields on epic/task files
+- `epics/<name>/tracker-mapping.md` for local task ID to Jira key mapping
+
+**Design decisions** — intentionally keeps local files as source of truth and uses Jira sync as an explicit step. Git branching and worktrees are optional team practices; the sync phase does not create them.
 
 **Looking for v1?** — The original `/pm:*` Claude Code slash command system is preserved on the [`v1` branch](https://github.com/automazeio/ccpm/tree/v1).
 

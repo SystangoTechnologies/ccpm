@@ -1,52 +1,57 @@
 ---
 name: ccpm
-description: "CCPM - spec-driven project management: PRD → Epic → GitHub Issues → parallel agents → shipped code. Use this skill for anything in the software delivery lifecycle: writing a PRD ('write a PRD for X', 'let's plan X', 'scope this out'), parsing a PRD into an epic, decomposing an epic into tasks, syncing to GitHub ('sync the X epic', 'push tasks to github'), starting work on an issue ('start working on issue N', 'let's work on issue N'), analyzing parallel work streams, running standups ('standup', 'run the standup'), checking status ('what's next', 'what's blocked', 'what are we working on'), closing issues, or merging an epic. Use ccpm any time the user is talking about shipping a feature, managing work, or tracking progress — even if they don't say 'ccpm' or 'PRD'. Do NOT use for: debugging code, writing tests, reviewing PRs, or raw GitHub issue/PR operations with no delivery context."
+description: "CCPM — spec-driven project management for PM work: PRD → Epic → Jira-aligned work items → sync and track. Use for planning, decomposition, Jira ticket hygiene (templates, DOR/DOD), status, and reporting. Not for writing application code, running dev environments, or execution workflows. Do NOT use for: debugging code, implementing features, reviewing PRs, or raw Jira clicks with no PM context."
 ---
 
-# CCPM - Claude Code Project Manager
+# CCPM - Cursor Project Manager
 
-A spec-driven development workflow: PRD → Epic → GitHub Issues → Parallel Agents → Shipped Code.
+A **PM-focused** workflow: requirements and epics live in markdown; Jira is the tracker of record for sync, status, and delivery visibility.
 
 ## Core Philosophy
 
-Requirements live in files, not heads. Every feature starts as a PRD, becomes a technical epic, decomposes into GitHub issues, and gets executed by parallel agents with full traceability.
+Requirements live in files, not heads. Work flows from **PRD** to **epic** to **structured work items** (`T###.md`), then to **Jira** for the team to execute elsewhere. This skillset stays on **planning, structure, sync, and track** — not on coding or dev execution.
+
+No blank Jira tickets: follow the org **Jira ticket structure** template (section titles and order), links, and dependencies.
 
 ## File Conventions
 
-Before doing anything, read `references/conventions.md` for path standards, frontmatter schemas, and GitHub operation rules. These apply to all phases.
+Before doing anything, read `references/conventions.md` for paths, frontmatter, and Jira rules.
 
-## The Five Phases
+### Canonical root directories
+
+- `prds/` for PRDs
+- `epics/<feature>/` for `epic.md`, `T###.md`, and `tracker-mapping.md`
+- `docs/` for supplementary documentation (optional)
+
+## The four phases
 
 ### 1. Plan — Capture requirements
-**When**: User wants to define a new feature, product requirement, or scope of work.
-**Read**: `references/plan.md`
-**Covers**: Writing PRDs through guided brainstorming, converting PRDs to technical epics.
+
+**When**: Define a feature, product requirement, or scope.  
+**Read**: `references/plan.md`  
+**Covers**: PRDs, PRD → epic, DOR-style inputs (scope, dependencies, links).
 
 ### 2. Structure — Break it down
-**When**: An epic exists and needs to be decomposed into concrete tasks.
-**Read**: `references/structure.md`
-**Covers**: Epic decomposition into numbered task files with dependencies and parallelization.
 
-### 3. Sync — Push to GitHub
-**When**: Local epic/tasks need to become GitHub issues, progress needs to be posted as comments, or a bug is found and needs a linked issue created.
-**Read**: `references/sync.md`
-**Covers**: Epic sync (epic + tasks → GitHub issues), issue sync (progress comments), closing issues/epics, bug reporting against completed issues.
+**When**: An epic exists and needs concrete work items.  
+**Read**: `references/structure.md`  
+**Covers**: Decomposition into Story / Task / Sub-task / Bug files, dependencies, `parallel` / `conflicts_with` for **planning** (who could work in parallel), not for running agents.
 
-### 4. Execute — Start building
-**When**: User wants to start working on one or more GitHub issues with parallel agents.
-**Read**: `references/execute.md`
-**Covers**: Issue analysis (parallel work stream identification), launching parallel agents, coordinating worktrees.
+### 3. Sync — Push to Jira
 
-### 5. Track — Know where things stand
-**When**: User asks for status, standup report, what's blocked, what's next, or needs to validate state.
-**Read**: `references/track.md`
-**Covers**: Status, standup, search, in-progress, next priority, blocked items, validation.
+**When**: Local epic and `T###.md` files should become Jira issues, or issues need closing / epic completion / bug capture.  
+**Read**: `references/sync.md`  
+**Covers**: Epic + child issue creation, frontmatter keys, `tracker-mapping.md`, closing issues, completing epics, reporting bugs into the backlog.
+
+### 4. Track — Know where things stand
+
+**When**: Status, standup, next, blocked, search, validate.  
+**Read**: `references/track.md`  
+**Covers**: Script-first reporting from local + Jira metadata.
 
 ---
 
-## Script-First Rule
-
-For deterministic operations — anything that reads and reports without needing reasoning — always run the bash script directly rather than doing the work manually:
+## Script-first rule
 
 | What the user wants | Script to run |
 |---|---|
@@ -57,26 +62,46 @@ For deterministic operations — anything that reads and reports without needing
 | Epic status | `bash references/scripts/epic-status.sh <name>` |
 | List PRDs | `bash references/scripts/prd-list.sh` |
 | PRD status | `bash references/scripts/prd-status.sh` |
-| Search issues/tasks | `bash references/scripts/search.sh <query>` |
+| Search | `bash references/scripts/search.sh <query>` |
 | What's in progress | `bash references/scripts/in-progress.sh` |
 | What's next | `bash references/scripts/next.sh` |
 | What's blocked | `bash references/scripts/blocked.sh` |
-| Validate project state | `bash references/scripts/validate.sh` |
+| Validate | `bash references/scripts/validate.sh` |
 
-Use the LLM for work that requires reasoning: writing PRDs, analyzing parallelism, launching agents, synthesizing updates.
+Use the LLM for reasoning-heavy PM work: drafting PRDs, decomposing epics, drafting Jira-ready descriptions, interpreting status.
+
+## Jira ticket policy
+
+Epic, Story, Task, Sub-task, and Bug **titles, section order, and required fields**: see **`references/conventions.md`**. In particular: **no** “Local CCPM …” lines in Jira bodies; **Task/Sub-task** summaries start with **`FE:` / `BE:` / `Mobile:`** when surface-specific; **Task/Sub-task** blockers = YAML **`depends_on`** + Jira **`createIssueLink`** only (no `## Dependencies` in descriptions); **Story** optional sections use plain headings (**Designs**, **Technical Note**, etc.) — **omit** the section if empty, and **never** put `(optional)` in the heading.
+
+### Quality gates
+
+- **DOR (before sync)**: required template fields, dependencies/links, no placeholder text.
+- **DOD (before close)**: acceptance criteria satisfied per process, Jira reflects done, dependencies and links updated as needed.
 
 ---
 
-## Quick Reference
+## Quick reference
 
 ```
-Plan a feature:     "I want to build X" or "create a PRD for X"
+Plan a feature:     "create a PRD for X"
 Parse to epic:      "turn the X PRD into an epic"
 Decompose:          "break down the X epic into tasks"
-Sync to GitHub:     "push the X epic to GitHub"
-Start an issue:     "start working on issue 42"
+Sync to Jira:       "sync the X epic to Jira"
+Create a story:     "create story from epic X for Y"
+Create a task:      "create internal task for X"
+Validate:           "validate" / "validate DOR for T001"
 Check status:       "what's our status" / "standup"
-What's next:        "what should I work on next"
-Merge epic:         "merge the X epic"
-Report a bug:       "found a bug in issue 42" / "testing issue 42 revealed X"
+What's next:        "what should we pull next" / "what's blocked"
+Complete epic:      "complete the X epic"
+Report a bug:       "log a bug for task T001" / "follow-up from PROJ-42"
 ```
+
+## Required downstream references
+
+- `references/conventions.md`
+- `references/plan.md`
+- `references/structure.md`
+- `references/sync.md`
+- `references/track.md`
+- `references/scripts/*.sh`

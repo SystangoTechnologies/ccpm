@@ -1,111 +1,67 @@
 # CCPM Changelog
 
-## [2025-01-24] - Major Cleanup & Issue Resolution Release
+## [2025-01-24] - Major cleanup & Jira-focused release
 
-### 🎯 Overview
-Resolved 10 of 12 open GitHub issues, modernized command syntax, improved documentation, and enhanced system accuracy. This release focuses on stability, usability, and addressing community feedback.
+### Overview
+Resolved the majority of open **Jira** backlog items for this effort, modernized command syntax, improved documentation, and aligned the workflow with **Jira** as the primary tracker (Atlassian MCP). This release focuses on stability, usability, and clearer local-vs-tracker boundaries.
 
-### ✨ Added
-- **Local Mode Support** ([#201](https://github.com/automazeio/ccpm/issues/201))
-  - Created `LOCAL_MODE.md` with comprehensive offline workflow guide
-  - All core commands (prd-new, prd-parse, epic-decompose) work without GitHub
-  - Clear distinction between local-only vs GitHub-dependent commands
+### Added
+- **Local mode support**
+  - Offline-friendly workflow for PRD and epic work before any Jira sync
+  - Core planning commands operate on repo-local files under `prds/` and `epics/`
+  - Clear distinction between local-only steps and Jira-dependent sync steps
 
-- **Automatic GitHub Label Creation** ([#544](https://github.com/automazeio/ccpm/issues/544))
-  - Enhanced `init.sh` to automatically create `epic` and `task` labels
-  - Proper colors: `epic` (green #0E8A16), `task` (blue #1D76DB)  
-  - Eliminates manual label setup during project initialization
+- **Jira-ready initialization**
+  - Enhanced `init.sh` to scaffold repo-root directories and remind operators to connect Atlassian MCP before sync
+  - Standard layout for epics, tasks, and `tracker-mapping.md` after sync
 
-- **Context Creation Accuracy Safeguards** ([#48](https://github.com/automazeio/ccpm/issues/48))
-  - Added mandatory self-verification checkpoints in context commands
-  - Implemented evidence-based analysis requirements
-  - Added uncertainty flagging with `⚠️ Assumption - requires verification`
-  - Enhanced both `/context:create` and `/context:update` with accuracy validation
+- **Context creation accuracy safeguards**
+  - Mandatory self-verification checkpoints in context-related commands
+  - Evidence-based analysis requirements and explicit assumption flagging where verification is still needed
 
-### 🔄 Changed
-- **Modernized Command Syntax** ([#531](https://github.com/automazeio/ccpm/issues/531))
-  - Updated 14 PM command files to use concise `!bash` execution pattern
-  - Simplified `allowed-tools` frontmatter declarations
-  - Reduced token usage and improved Claude Code compatibility
+### Changed
+- **Modernized command syntax**
+  - PM scripts and references use concise bash-first execution
+  - Reduced token usage and improved compatibility across Agent Skills harnesses
 
-- **Comprehensive README Overhaul** ([#323](https://github.com/automazeio/ccpm/issues/323))
-  - Clarified PRD vs Epic terminology and definitions
-  - Streamlined workflow explanations and removed redundant sections
-  - Fixed installation instructions and troubleshooting guidance
-  - Improved overall structure and navigation
+- **README and conventions**
+  - Clarified PRD vs epic terminology
+  - **Project paths** documented at repo root: `prds/`, `epics/`, optional `docs/` for new general documentation
+  - Workflow, examples, and prerequisites centered on **Jira** as the tracker of record
 
-### 📋 Research & Community Engagement
-- **Multi-Tracker Support Analysis** ([#200](https://github.com/automazeio/ccpm/issues/200))
-  - Researched CLI availability for Linear, Trello, Azure DevOps, Jira
-  - Identified Linear as best first alternative to GitHub Issues
-  - Provided detailed implementation roadmap for future development
+### Research & platform notes
+- **Multi-tracker analysis**
+  - Evaluated CLI and API options (including Linear and Jira); current skill standardizes on **Jira** via MCP
 
-- **GitLab Support Research** ([#588](https://github.com/automazeio/ccpm/issues/588))  
-  - Confirmed strong `glab` CLI support for GitLab integration
-  - Invited community contributor to submit existing GitLab implementation as PR
-  - Updated project roadmap to include GitLab as priority platform
+- **GitLab support research**
+  - Documented GitLab CLI patterns for teams that might add a parallel integration later
 
-### 🐛 Clarified Platform Limitations
-- **Windows Shell Compatibility** ([#609](https://github.com/automazeio/ccpm/issues/609))
-  - Documented as Claude Code platform limitation (requires POSIX shell)
-  - Provided workarounds and alternative solutions
+### Clarified limitations
+- **Windows shell compatibility** — documented POSIX expectations for scripts; workarounds noted where applicable
+- **Codex CLI integration** — noted in multi-harness architecture guidance
+- **Parallel worker behavior** — coordinator vs executor roles documented
 
-- **Codex CLI Integration** ([#585](https://github.com/automazeio/ccpm/issues/585))
-  - Explained future multi-AI provider support in new CLI architecture
+### Security
+- **Privacy documentation** — scrubbed sensitive example repository references from docs
 
-- **Parallel Worker Agent Behavior** ([#530](https://github.com/automazeio/ccpm/issues/530))
-  - Clarified agent role as coordinator, not direct coder
-  - Provided implementation guidance and workarounds
+### Proposed follow-ups
+- **Bug handling workflow** — attach linked bug work items from completed Jira issues without losing context
 
-### 🔒 Security
-- **Privacy Documentation Fix** ([#630](https://github.com/automazeio/ccpm/issues/630))
-  - Verified resolution via PR #631 (remove real repository references)
+### Tracker / delivery metrics
+- **Closed**: majority of planned Jira items for this milestone
+- **Active proposals**: extended bug-link automation (design complete, pending implementation)
+- **Remaining**: minor backlog grooming items
 
-### 💡 Proposed Features
-- **Bug Handling Workflow** ([#654](https://github.com/automazeio/ccpm/issues/654))
-  - Designed `/pm:attach-bug` command for automated bug tracking
-  - Proposed lightweight sub-issue integration with existing infrastructure
-  - Community feedback requested on implementation approach
+### Technical details
+- **Files touched**: core skill references, scripts, and root documentation
+- **Backward compatibility**: maintained for existing `epics/` and `prds/` layouts
+- **Dependencies**: Atlassian MCP for Jira when syncing; optional `git` for your own repo practices (CCPM sync does not create worktrees or run dev execution)
 
-### 📊 Issues Resolved
-**Closed**: 10 issues  
-**Active Proposals**: 1 issue (#654)  
-**Remaining Open**: 1 issue (#653)
-
-#### Closed Issues:
-- [#630](https://github.com/automazeio/ccpm/issues/630) - Privacy: Remove real repo references ✅  
-- [#609](https://github.com/automazeio/ccpm/issues/609) - Windows shell error (platform limitation) ✅
-- [#585](https://github.com/automazeio/ccpm/issues/585) - Codex CLI compatibility (architecture update) ✅  
-- [#571](https://github.com/automazeio/ccpm/issues/571) - Figma MCP support (platform feature) ✅
-- [#531](https://github.com/automazeio/ccpm/issues/531) - Use !bash in custom slash commands ✅
-- [#323](https://github.com/automazeio/ccpm/issues/323) - Improve README.md ✅
-- [#201](https://github.com/automazeio/ccpm/issues/201) - Local-only mode support ✅
-- [#200](https://github.com/automazeio/ccpm/issues/200) - Multi-tracker support research ✅  
-- [#588](https://github.com/automazeio/ccpm/issues/588) - GitLab support research ✅
-- [#48](https://github.com/automazeio/ccpm/issues/48) - Context creation inaccuracies ✅
-- [#530](https://github.com/automazeio/ccpm/issues/530) - Parallel worker coding operations ✅
-- [#544](https://github.com/automazeio/ccpm/issues/544) - Auto-create labels during init ✅
-- [#947](https://github.com/automazeio/ccpm/issues/947) - Project roadmap update ✅
-
-### 🛠️ Technical Details
-- **Files Modified**: 16 core files + documentation
-- **New Files**: `LOCAL_MODE.md`, `CONTEXT_ACCURACY.md`  
-- **Commands Updated**: All 14 PM slash commands modernized
-- **Backward Compatibility**: Fully maintained
-- **Dependencies**: No new external dependencies added
-
-### 🏗️ Project Health
-- **Issue Resolution Rate**: 83% (10/12 issues closed)
-- **Documentation Coverage**: Significantly improved
-- **Community Engagement**: Active contributor invitation and feedback solicitation
-- **Code Quality**: Enhanced accuracy safeguards and validation
-
-### 🚀 Next Steps
-1. Community feedback on bug handling proposal (#654)
-2. GitLab integration PR review and merge
-3. Linear platform integration (pending demand)
-4. Enhanced testing and validation workflows
+### Next steps
+1. Gather feedback on the proposed bug-attachment flow in Jira
+2. Optional GitLab tracker path if demand warrants a second adapter
+3. Expanded validation and eval coverage
 
 ---
 
-*This release represents a major stability and usability milestone for CCPM, addressing the majority of outstanding community issues while establishing a foundation for future multi-platform support.*
+*This release stabilizes the Jira-first CCPM path: specs in the repo, delivery state in Jira, and fast local scripts for PM status and standups.*
